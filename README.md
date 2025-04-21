@@ -1,47 +1,52 @@
 # 🕵️‍♀️ Investigação de Incidente: Windows - Credencial Comprometida
 
-🔍 Projeto simula a investigação de um possível ataque a um host Windows, com login anômalo, extração de credenciais e uso de shell remota.
+🔍 Projeto simula a investigação de um incidente em host Windows, com login anômalo, atividades suspeitas e possível shell remota.
 
 ## ⚠️ Contexto do Alerta
 
-Durante monitoramento de atividades suspeitas em um host Windows, foi detectado um login fora do horário padrão e regras de firewall alteradas.
+Durante análise rotineira, foi identificado um login fora do horário usual. Em seguida, surgiram indícios de alteração no sistema, possível uso de ferramenta de extração de senhas e atividade de rede incomum.
 
 ## 🧪 O que foi investigado
 
-- Logs de login suspeito
-- Extração de senhas com Mimikatz
-- Shell remota com extensão `.jsp`
-- Regra de firewall abrindo a porta `1337`
-- DNS spoofing apontando `google.com` para IP externo
+- Logs de login e execução de programas
+- Presença de ferramentas suspeitas (ex: Mimikatz)
+- Arquivos web suspeitos (.jsp)
+- Regra de firewall personalizada
+- Alteração no arquivo `hosts`
+- Indício de comunicação com IP malicioso
 
 ## 🖼️ Evidências
 
 ### 🔑 Extração de senhas com Mimikatz
-![mimikatz](images/mimikatz.png)
-> Ferramenta usada pelo invasor para capturar credenciais do sistema.
+![mimikatz](images/mimikatz.png)  
+> Ferramenta flagrada em execução, mostrando credenciais na memória.
 
-### 🌐 IP suspeito no arquivo `hosts`
-![hosts-file](images/hosts-file.png)
-> O domínio google.com foi redirecionado para um IP malicioso (C2).
+### 🌐 IP malicioso no arquivo `hosts`
+![hosts](images/hosts-file.png)  
+> DNS spoofing: domínio redirecionado para IP externo malicioso.
 
-### 💻 Shell `.jsp` no servidor web
-![jsp-shell](images/jsp-file.png)
-> Arquivos JSP indicam possível webshell implantada no servidor.
+### 🧾 Login suspeito
+![login-log](images/login-log.png)  
+> Login fora do horário padrão por usuário legítimo.
 
-### 🔥 Regra de firewall abrindo a porta 1337
-![firewall-rule](images/firewall-rule.png)
-> Regra "Allow outside connections for development" permite acesso remoto.
+### 💻 JSP Shell detectada
+![jsp-file](images/jsp-file.png)  
+> Webshell presente no servidor local.
+
+### 🔥 Regra de firewall alterada
+![firewall](images/firewall-rule.png)  
+> Porta 1337 liberada por regra suspeita.
 
 ## 🛠️ Ferramentas usadas
 
-- 🧪 TryHackMe - Lab Investigating Windows
-- 🔎 Windows Event Viewer
-- 🔥 Windows Firewall
-- 📁 Explorer + Hosts File
-- 🌐 Ping/Terminal
+- 💻 TryHackMe - Investigating Windows
+- 🔍 Windows Event Viewer
+- 🔥 Firewall configurator
+- 📂 Explorer / Terminal
+- 🧰 Mimikatz (detectado)
 
 ## ✅ Conclusão
 
-🟥 Incidente confirmado: shell remota instalada + credenciais comprometidas.
+🟥 Incidente confirmado: shell remota instalada + extração de credenciais.
 
-🔗 Relatório técnico completo em: [`report.md`](./report.md)
+📄 Relatório técnico completo em: [`report.md`](./report.md)
