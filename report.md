@@ -1,100 +1,102 @@
-# 🧾 Relatório Técnico de Incidente – Host Windows
+# 🛡️ Incident Report — Login Anomaly & Credential Dump
 
-📅 **Data Simulada:** 2025-04-21  
-👤 **Analista Responsável:** Mari WW
+## 📅 Timeline do Incidente
 
----
-
-## 🧠 Resumo Técnico
-
-Durante uma verificação em ambiente Windows, foi identificado um login suspeito, seguido por execução de ferramentas de ataque conhecidas, manipulação de DNS, e possível instalação de shell remota.
-
----
-
-## 🚨 Alerta Inicial
-
-- **Fonte:** Monitoramento interno / TryHackMe Lab
-- **Descrição:** Login fora do padrão com possível persistência pós-comprometimento
-
-📷 `images/login-log.png`
+| Data/Hora            | Evento                                                                 |
+|----------------------|------------------------------------------------------------------------|
+| 03/02/2019 16:04     | Login anômalo detectado (Event ID 4624)                                |
+| --                   | Execução da ferramenta Mimikatz                                        |
+| --                   | Upload de arquivos .jsp suspeitos no servidor web                     |
+| --                   | Criação de regra de firewall liberando porta externa (1337)            |
+| --                   | Manipulação do arquivo `hosts` para redirecionar tráfego DNS           |
 
 ---
 
 ## 🔍 Evidências Coletadas
 
-### 1. Login Anômalo
-📍 Local: Logs do Event Viewer  
-🕒 Login em horário fora do normal  
-👤 Usuário legítimo, sem justificativa plausível
+### 📌 1. Login Anômalo
 
-📷 `images/login-log.png`
+🖼️ **`images/login-log.png`**  
+🕵️ *Logon bem-sucedido em horário fora do padrão, indicando possível uso indevido de credencial legítima.*
 
----
-
-### 2. Execução de Mimikatz
-📍 Local: Diretório temporário  
-📄 Arquivo: `mimikatz.exe`  
-⚠️ Dump de credenciais exibido em tela
-
-📷 `images/mimikatz.png`
+🗂️ **Fonte**: Event Viewer → Windows Logs → Security  
+🔢 **Event ID**: 4624  
+🕒 **Horário**: 03/02/2019 16:04:47
 
 ---
 
-### 3. JSP Webshell
-📍 Local: `C:\inetpub\wwwroot\`  
-📄 Arquivo: `cmd.jsp`  
-🛠 Acesso remoto via navegador
+### 📌 2. Execução do Mimikatz
 
-📷 `images/jsp-file.png`
+🖼️ **`images/mimikatz.png`**  
+🕵️ *Ferramenta de credential dumping (Mimikatz) flagrada em execução, com extração de senhas da memória.*
 
 ---
 
-### 4. Regra de Firewall Customizada
-📍 Ferramenta: Painel de Firewall  
-⚠️ Regra: “Allow outside connections for development”  
-🛑 Porta aberta: 1337
+### 📌 3. Webshell JSP
 
-📷 `images/firewall-rule.png`
+🖼️ **`images/jsp-file.png`**  
+🕵️ *Presença de arquivos `.jsp` em diretório de servidor web indica possível webshell para acesso remoto.*
 
----
-
-### 5. DNS Spoofing via arquivo `hosts`
-📍 Arquivo: `C:\Windows\System32\drivers\etc\hosts`  
-➡️ google.com → IP 192.168.1.101  
-🎯 Indício de comunicação com C2
-
-📷 `images/hosts-file.png`
+📁 Local: `C:\inetpub\wwwroot\`  
+🧩 Arquivos suspeitos: `shell.jsp`, `reverse.jsp`, `img.gif`
 
 ---
 
-## 🧬 MITRE ATT&CK TTPs
+### 📌 4. Regra de Firewall Suspeita
 
-| Tática                | Técnica                         | ID       |
-|----------------------|----------------------------------|----------|
-| Credential Access     | Credential Dumping (Mimikatz)    | [T1003](https://attack.mitre.org/techniques/T1003) |
-| Command and Control   | Application Layer Protocol       | [T1071.001](https://attack.mitre.org/techniques/T1071/001) |
-| Execution             | Command via Webshell (.jsp)      | [T1059.004](https://attack.mitre.org/techniques/T1059/004) |
-| Defense Evasion       | Modify System Configuration      | [T1562.001](https://attack.mitre.org/techniques/T1562/001) |
+🖼️ **`images/firewall-rule.png`**  
+🕵️ *Regra personalizada libera porta 1337 para conexões externas — potencial canal de comando e controle (C2).*
 
 ---
 
-## 🛡️ Ações Sugeridas
+### 📌 5. Arquivo hosts adulterado
 
-1. 🚫 Isolar máquina afetada imediatamente
-2. 🔄 Resetar todas as credenciais do host
-3. 🔍 Verificar logs de acesso remoto recentes
-4. 🛠 Remover webshell e regra de firewall
-5. 🧼 Reinstalação limpa recomendada
-6. 🔔 Alerta ao time de resposta e ao usuário
+🖼️ **`images/hosts-file.png`**  
+🕵️ *Redirecionamento DNS no arquivo hosts, alterando google.com para um IP interno malicioso (spoofing DNS).*
+
+🧠 IP falso: `76.32.97.132`
 
 ---
 
-## ✅ Conclusão
+### 📌 6. Confirmação via ping
 
-🟥 **Incidente Confirmado**
+🖼️ **`images/ping-google.png`**  
+🕵️ *Resultado do comando `ping google.com` mostra IP falso, confirmando adulteração local no DNS.*
 
-- Origem: Comprometimento de credencial
-- Impacto: Controle remoto via webshell + extração de senhas
-- Estado Atual: Host comprometido
+---
 
-🔁 Recomendado reforçar monitoramento de logs de login e uso de ferramentas como Mimikatz.
+## 🧬 Técnicas MITRE ATT&CK (Mapping)
+
+| Fase             | Técnica                            | ID         | Descrição                                                      |
+|------------------|-------------------------------------|------------|----------------------------------------------------------------|
+| Acesso Inicial   | Valid Accounts                     | T1078      | Uso de credenciais legítimas para acessar o sistema            |
+| Execução         | Command and Scripting Interpreter  | T1059.001  | Execução de comandos via linha de comando                      |
+| Credential Access| Credential Dumping (Mimikatz)      | T1003.001  | Extração de senhas da memória                                  |
+| Persistência     | Web Shell                          | T1505.003  | Webshell JSP no diretório wwwroot                              |
+| Defesa Evasão    | Modify System Configuration        | T1562.001  | Manipulação do arquivo `hosts`                                 |
+| Comunicação C2   | Non-Standard Port                  | T1571      | Porta 1337 liberada no firewall para C2 externo                |
+
+---
+
+## 🧠 Análise
+
+- **Login** fora do horário padrão pode indicar **uso indevido de credenciais válidas**.
+- Uso do **Mimikatz** confirma foco em **movimentação lateral e persistência**.
+- Presença de **webshell** mostra tentativa clara de **controle remoto contínuo**.
+- Manipulação do **arquivo hosts** mostra **técnica de DNS spoofing local**.
+- Liberação da **porta 1337** sugere **canal alternativo de C2**.
+
+---
+
+## 🔐 Recomendações
+
+- 🚫 **Revogar credenciais** utilizadas no login anômalo
+- 🔎 Realizar **varredura completa** por artefatos maliciosos
+- 🛑 Bloquear o IP malicioso `76.32.97.132` no firewall
+- 📋 Auditar outras máquinas para **mecanismos de persistência**
+- 📁 Restaurar configurações do arquivo `hosts`
+- 📬 Configurar alerta para alterações de regras de firewall
+
+---
+
+📌 *Este relatório foi gerado como parte de simulação investigativa no laboratório “Investigating Windows” (TryHackMe).*
