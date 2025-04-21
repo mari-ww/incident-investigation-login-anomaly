@@ -81,4 +81,4 @@ Durante análise rotineira, foi identificado um login fora do horário usual. Em
 - **Desabilitar regra de firewall maliciosa** e monitorar tráfego de rede.
 - **Investigar outros sistemas na rede** para possíveis comprometimentos similares.
 
-📄 Relatório técnico completo em: [`report.md`](./report.md)
+📄 Relatório técnico completo em: [`relatório.pdf`](./relatório.pdf)
