@@ -1,5 +1,19 @@
 # 🕵️‍♀️ Investigação de Incidente: Windows - Credencial Comprometida
 
+[![Status](https://img.shields.io/badge/status-concluído-brightgreen)]()
+[![Nível](https://img.shields.io/badge/nível-intermediário-orange)]()
+[![Ferramentas](https://img.shields.io/badge/ferramentas-EventViewer%20%7C%20MITRE%20ATT%26CK-blueviolet)]()
+[![Plataforma](https://img.shields.io/badge/TryHackMe-Investigating%20Windows%20Events-red)]()
+
+## 📦 Estrutura
+
+```bash
+├── evidencias/                     <- Prints e artefatos utilizados na investigação
+├── eventos_evtx/                   <- Arquivos .evtx fornecidos pelo lab
+├── relatorio.pdf                  <- Relatório final com a análise dos eventos
+└── README.md                       <- Este arquivo
+```
+
 🔍 Este projeto simula a investigação de um incidente em um sistema Windows, com login anômalo, atividades suspeitas e possível shell remota. O objetivo é identificar comportamentos maliciosos e mapear as TTPs usadas pelos atacantes.
 
 ## ⚠️ Contexto do Alerta
@@ -51,23 +65,23 @@ Durante análise rotineira, foi identificado um login fora do horário usual. Em
 ## 🧠 Análise Técnica
 
 ### 1. **Login fora do horário (Event ID 4624)**
-- **Técnica MITRE:** T1078 - **Valid Accounts**
+- **Técnica MITRE:** [T1078 - Valid Accounts](https://attack.mitre.org/techniques/T1078/)
 - **Análise:** O login foi realizado em um horário atípico, sugerindo que um atacante pode ter usado credenciais válidas para obter acesso ao sistema de forma ilegítima. Esse tipo de evento é um indicador clássico de **credenciais comprometidas**.
 
 ### 2. **Execução do Mimikatz**
-- **Técnica MITRE:** T1003 - **Credential Dumping**
+- **Técnica MITRE:** [T1003 - Credential Dumping](https://attack.mitre.org/techniques/T1003/)
 - **Análise:** A execução do Mimikatz, ferramenta usada para extração de credenciais da memória, confirma que o atacante obteve acesso e está tentando se movimentar lateralmente no ambiente. A extração de credenciais é uma técnica comum para escalar privilégios e continuar o ataque.
 
 ### 3. **Webshell JSP**
-- **Técnica MITRE:** T1059.007 – **Command and Scripting Interpreter: JavaScript / JSP**
+- **Técnica MITRE:** [T1059.007 – Command and Scripting Interpreter: JavaScript / JSP](https://attack.mitre.org/techniques/T1059/007/)
 - **Análise:** A presença de arquivos `.jsp` no diretório `wwwroot` sugere a instalação de uma **webshell**, permitindo que o atacante tenha controle remoto sobre o servidor afetado. Isso configura uma técnica de **persistência** no sistema.
 
 ### 4. **Alteração do arquivo `hosts`**
-- **Técnica MITRE:** T1562.001 – **Impair Defenses: Disable or Modify Tools**
+- **Técnica MITRE:** [T1562.001 – Impair Defenses: Disable or Modify Tools](https://attack.mitre.org/techniques/T1562/001/)
 - **Análise:** A modificação do arquivo `hosts` para redirecionar tráfego DNS a um IP malicioso é uma forma de **interferência na resolução local de domínios**, com objetivo de camuflar comunicações C2 ou bloquear acessos legítimos.
 
 ### 5. **Regra de Firewall suspeita**
-- **Técnica MITRE:** T1071.001 – **Application Layer Protocol: Web Protocols**
+- **Técnica MITRE:** [T1071.001 – Application Layer Protocol: Web Protocols](https://attack.mitre.org/techniques/T1071/001/)
 - **Análise:** A criação de uma regra de firewall permitindo conexões externas na porta 1337 é uma evidência de que o atacante configurou um canal de comunicação externo (C2). Isso pode ser um ponto crítico de controle remoto, onde o atacante pode executar comandos no sistema comprometido.
 
 ## ✅ Conclusão
