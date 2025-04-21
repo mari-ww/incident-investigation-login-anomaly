@@ -1,52 +1,77 @@
-# 🕵️‍♀️ Investigação de Incidente: Windows - Credencial Comprometida
+# 🕵️‍♀️ Investigação de Incidente - Login Anômalo e Persistência
 
-🔍 Projeto simula a investigação de um incidente em host Windows, com login anômalo, atividades suspeitas e possível shell remota.
+Este projeto simula uma investigação real de incidente usando um ambiente forense Windows (TryHackMe - Investigating Windows). A análise foca na identificação de comportamento malicioso, persistência, técnicas de acesso remoto e desvio de DNS.
 
-## ⚠️ Contexto do Alerta
+🔎 **Objetivo:** Simular uma investigação de SOC após atividade suspeita, validando TTPs e IoCs usados por atacantes.
 
-Durante análise rotineira, foi identificado um login fora do horário usual. Em seguida, surgiram indícios de alteração no sistema, possível uso de ferramenta de extração de senhas e atividade de rede incomum.
+📅 **Situação:** Um login em horário incomum foi detectado. A partir disso, realizamos uma investigação completa no sistema.
 
-## 🧪 O que foi investigado
+---
 
-- Logs de login e execução de programas
-- Presença de ferramentas suspeitas (ex: Mimikatz)
-- Arquivos web suspeitos (.jsp)
-- Regra de firewall personalizada
-- Alteração no arquivo `hosts`
-- Indício de comunicação com IP malicioso
+## 📸 Evidências Coletadas
 
-## 🖼️ Evidências
+As imagens estão na pasta `images/`, cada uma com legenda explicando sua relevância.
 
-### 🔑 Extração de senhas com Mimikatz
-![mimikatz](images/mimikatz.png)  
-> Ferramenta flagrada em execução, mostrando credenciais na memória.
+| Evidência                      | Descrição                                                                 |
+|-------------------------------|---------------------------------------------------------------------------|
+| `login-log.png`               | Logon bem-sucedido fora do horário padrão (Event ID 4624)                 |
+| `mimikatz.png`                | Execução do Mimikatz para extração de credenciais da memória             |
+| `jsp-file.png`                | Webshells `.jsp` no servidor IIS (ponto de persistência)                 |
+| `firewall-rule.png`           | Regra de firewall criada manualmente, liberando porta 1337               |
+| `hosts-file.png`              | Arquivo hosts adulterado redirecionando `google.com` para IP interno     |
+| `ping-google.png` (extra)     | Ping mostra IP falso, confirmando falsificação de DNS local              |
 
-### 🌐 IP malicioso no arquivo `hosts`
-![hosts](images/hosts-file.png)  
-> DNS spoofing: domínio redirecionado para IP externo malicioso.
+---
 
-### 🧾 Login suspeito
-![login-log](images/login-log.png)  
-> Login fora do horário padrão por usuário legítimo.
+## 🧠 Análise Técnica
 
-### 💻 JSP Shell detectada
-![jsp-file](images/jsp-file.png)  
-> Webshell presente no servidor local.
+### 🔍 Indicadores observados
+- Login suspeito em horário incomum
+- Execução de ferramenta de credential dumping (`mimikatz`)
+- Criação de shell remota (`.jsp`) no servidor web
+- Liberação de porta não padrão (1337)
+- Modificação local do DNS via arquivo `hosts`
 
-### 🔥 Regra de firewall alterada
-![firewall](images/firewall-rule.png)  
-> Porta 1337 liberada por regra suspeita.
+### ⚙️ Técnicas MITRE ATT&CK
 
-## 🛠️ Ferramentas usadas
+| Tática                    | Técnica                                                   |
+|--------------------------|------------------------------------------------------------|
+| Initial Access           | `T1190` - Exploit Public-Facing Application                |
+| Credential Access        | `T1003.001` - LSASS Memory (Mimikatz)                      |
+| Persistence              | `T1505.003` - Web Shell                                    |
+| Defense Evasion          | `T1036` - Masquerading                                     |
+| Command and Control      | `T1071.001` - Web Protocols / `T1071.004` - DNS            |
+| Execution                | `T1059` - Command and Scripting Interpreter                |
 
-- 💻 TryHackMe - Investigating Windows
-- 🔍 Windows Event Viewer
-- 🔥 Firewall configurator
-- 📂 Explorer / Terminal
-- 🧰 Mimikatz (detectado)
+---
 
-## ✅ Conclusão
+## 🧰 Relatório Técnico
 
-🟥 Incidente confirmado: shell remota instalada + extração de credenciais.
+👉 O relatório completo da investigação está em [`report.md`](report.md)
 
-📄 Relatório técnico completo em: [`report.md`](./report.md)
+📝 Inclui:
+- Linha do tempo do ataque
+- Análise de cada evidência
+- Técnicas utilizadas
+- Recomendação de resposta
+
+---
+
+## 🧬 Conclusão
+
+Este projeto demonstra:
+✅ Capacidade de correlacionar evidências  
+✅ Reconhecimento de atividades fora do comportamento normal  
+✅ Uso de TTPs reais com base em MITRE ATT&CK  
+✅ Análise forense prática e simulação de ambiente SOC realista
+
+---
+
+## 🗂️ Estrutura do Projeto
+
+```bash
+├── images/                      # Prints das evidências
+├── report.md                    # Relatório técnico (Markdown)
+├── relatorio_final.pdf          # (Opcional, versão bonita em PDF)
+├── README.md                    # Apresentação do projeto estilo
+```
